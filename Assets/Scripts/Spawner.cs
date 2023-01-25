@@ -4,31 +4,29 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    public GameObject coinPrefab;
+    public Coin coinPrefab;
     public Transform[] spawnPoints;
     public float spawnDelay;
 
     private int _randomPosition;
-    private int _destroyObjectPosition = -10;
+    private WaitForSeconds _sleepTime;
 
     private void Start()
     {
-
+        _sleepTime = new WaitForSeconds(spawnDelay);
         StartCoroutine(SpawnCoins());
     }
 
     private IEnumerator SpawnCoins()
     {
-        while (true)
+        if (coinPrefab.TryGetComponent(out Coin coin))
         {
-            _randomPosition = Random.Range(0, spawnPoints.Length);
-            GameObject coin = Instantiate(coinPrefab, spawnPoints[_randomPosition].transform.position, Quaternion.identity);
-
-            yield return new WaitForSeconds(spawnDelay);
-
-            if (coin.transform.position.y < -_destroyObjectPosition)
+            while (true)
             {
-                Destroy(coin);
+                _randomPosition = Random.Range(0, spawnPoints.Length);
+                Instantiate(coinPrefab,spawnPoints[_randomPosition].transform.position, Quaternion.identity);
+
+                yield return _sleepTime;
             }
         }
     }
